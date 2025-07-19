@@ -71,7 +71,7 @@ def group_line_into_cells(line, x_tolerance=30):
 
     return cells
 
-def group_into_braille_cells(dot_boxes, y_tolerance=15, x_tolerance=30):
+def group_into_braille_cells(dot_boxes, y_tolerance=20, x_tolerance=30):
     lines = group_into_lines(dot_boxes, y_tolerance)
     all_cells = []
     for line in lines:
@@ -95,7 +95,7 @@ def draw_cells(img, cells):
     return output
 
 # --- USAGE ---
-img = cv.imread(r"Braille Dataset/Braille Document/datasets-braille/data/images/test/IMG_5466_jpg.rf.9fc8aa37446576204dca7ab136c4513e.jpg")
+img = cv.imread(r"Braille Dataset\Braille Document\datasets-braille\data\images\train\0000007_jpg.rf.cddd76cb910e100ff75766e26740a900.jpg")
 thresh = preprocess_image(img)
 dot_boxes = segment_braille_dots(thresh)
 cells = group_into_braille_cells(dot_boxes)

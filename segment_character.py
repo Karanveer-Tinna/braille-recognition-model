@@ -76,6 +76,41 @@ def merge_close_boxes(boxes):
 
     return merged
 
+def merge_overlapping_boxes(boxes):
+    """
+    Merge nearby/overlapping bounding boxes into larger boxes (Braille cells).
+    max_distance controls how close boxes need to be to merge.
+    """
+    merged = []
+    while boxes:
+        x, y, w, h = boxes.pop(0)
+        box1 = [x, y, x + w, y + h]
+
+        to_merge = []
+        for b in boxes:
+            x2, y2, w2, h2 = b
+            box2 = [x2, y2, x2 + w2, y2 + h2]
+
+            # Check if boxes overlap or are close enough to be in the same Braille cell
+            if not (box1[2] < box2[0] or
+                    box1[0] > box2[2] or
+                    box1[3] < box2[1] or
+                    box1[1] > box2[3]):
+                to_merge.append(b)
+
+        # Merge all nearby boxes
+        for b in to_merge:
+            boxes.remove(b)
+            x2, y2, w2, h2 = b
+            box1[0] = min(box1[0], x2)
+            box1[1] = min(box1[1], y2)
+            box1[2] = max(box1[2], x2 + w2)
+            box1[3] = max(box1[3], y2 + h2)
+
+        merged.append((box1[0], box1[1], box1[2] - box1[0], box1[3] - box1[1]))
+
+    return merged
+
 
 
 def sort_boxes_rowwise_with_tolerance(boxes, y_tolerance=10):
@@ -114,14 +149,14 @@ def find_dot_centers(thresh_img: np.ndarray) -> list:
     contours, _ = cv.findContours(thresh_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     # centers = []
 
-    boxes = [cv.boundingRect(cnt) for cnt in contours]
+    boxes = [cv.boundingRect(cnt) for cnt in contours if 3 < cv.contourArea(cnt) < 100]
     boxes_sorted = sort_boxes_rowwise_with_tolerance(boxes, y_tolerance=12)
     # boxes_sorted = sorted(boxes, key=lambda b: (b[1], b[0]))
 
     boxes_2 = merge_close_boxes(boxes_sorted)
     
     boxes_3 = sort_boxes_rowwise_with_tolerance(boxes_2, y_tolerance=5)
-    boxes_4 = merge_close_boxes(boxes_3)
+    boxes_4 = merge_overlapping_boxes(boxes_3)
 
     return boxes_4
 

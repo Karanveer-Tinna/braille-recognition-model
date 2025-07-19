@@ -60,3 +60,7 @@ model.fit(X_train, y_train, epochs=32, validation_data=(X_test, y_test))
 # EVALUATION
 test_loss, test_acc = model.evaluate(X_test, y_test)
 print(f"Test Accuracy: {test_acc * 100:.2f}%")
+
+# Save the whole model (architecture + weights + optimizer state)
+model.save("braille_cnn_model.h5")
+print("Model saved successfully!")

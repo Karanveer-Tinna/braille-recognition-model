@@ -23,21 +23,22 @@ def main():
     cv.waitKey(0)
 
     cells = extract_cells(thresh, dot_contours)
-    
 
     predicted_text = ''.join([predict_character(cell) for cell in cells])
     print("Predicted Braille Text:", predicted_text)
 
-def preprocess_image(img : np.ndarray) -> np.ndarray:    
-    _, thresh = cv.threshold(
-        cv.Canny(
-        cv.GaussianBlur(
-        cv.cvtColor(
-        img, 
-        cv.COLOR_BGR2GRAY), 
-        (1,1), 1),
-        130, 255),
-        130, 255, cv.THRESH_BINARY_INV)
+
+
+def preprocess_image(img: np.ndarray) -> np.ndarray:
+    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    equalized = clahe.apply(gray)
+    denoised = cv.bilateralFilter(equalized, d=9, sigmaColor=200, sigmaSpace=200)
+    thresh = cv.adaptiveThreshold(
+        denoised, 255,
+        cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV,
+        blockSize=5, C=2
+    )
     return thresh
 
 def segment_braille_dots(thresh_img: np.ndarray) -> list:

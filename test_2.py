@@ -9,24 +9,24 @@ braille_mapping = {
         22: 'W', 23: 'X', 24: 'Y', 25: 'Z'
 }
 model = load_model("braille_cnn_model.h5")
+print(model.input_shape)
 
 def main():
-    img = cv.imread(r"Braille Dataset\Braille Dataset\a1.JPG0dim.jpg")
+    img = cv.imread(r"Braille Dataset\Braille Document\datasets-braille\data\images\test\IMG_5231_jpg.rf.f2edf09192c7c9b39d295a41c44519fa.jpg")
 
     thresh = preprocess_image(img)
-    cv.imshow("Preprocessed image", thresh)
+    # cv.imshow("Preprocessed image", thresh)
 
     dot_contours = segment_braille_dots(thresh)
-    blank : np.ndarray = np.zeros(img.shape, np.uint8)
-    drawn_contours : np.ndarray = cv.drawContours(blank, [cnt for cnt in dot_contours], -1, (0, 255, 0), 1)
-    cv.imshow("Drawn Contours", drawn_contours)
-    cv.waitKey(0)
+    # blank : np.ndarray = np.zeros(img.shape, np.uint8)
+    # drawn_contours : np.ndarray = cv.drawContours(blank, [cnt for cnt in dot_contours], -1, (0, 255, 0), 1)
+    # cv.imshow("Drawn Contours", drawn_contours)
+    # cv.waitKey(0)
 
     cells = extract_cells(thresh, dot_contours)
 
     predicted_text = ''.join([predict_character(cell) for cell in cells])
     print("Predicted Braille Text:", predicted_text)
-
 
 
 def preprocess_image(img: np.ndarray) -> np.ndarray:

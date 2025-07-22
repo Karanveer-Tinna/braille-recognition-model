@@ -11,20 +11,19 @@ braille_mapping = {
 model = load_model("braille_cnn_model.h5")
 
 def main():
-    img = cv.imread(r"Braille Dataset\Braille Dataset\a1.JPG0dim.jpg")
+    img = cv.imread(r"Braille Dataset\Braille Document\datasets-braille\data\images\test\IMG_5231_jpg.rf.f2edf09192c7c9b39d295a41c44519fa.jpg")
 
     thresh = preprocess_image(img)
-    cv.imshow("Preprocessed image", thresh)
+    # cv.imshow("Preprocessed image", thresh)
 
     dot_contours = segment_braille_dots(thresh)
-    blank : np.ndarray = np.zeros(img.shape, np.uint8)
-    drawn_contours : np.ndarray = cv.drawContours(blank, [cnt for cnt in dot_contours], -1, (0, 255, 0), 1)
-    cv.imshow("Drawn Contours", drawn_contours)
-    cv.waitKey(0)
+    # blank : np.ndarray = np.zeros(img.shape, np.uint8)
+    # drawn_contours : np.ndarray = cv.drawContours(blank, [cnt for cnt in dot_contours], -1, (0, 255, 0), 1)
+    # cv.imshow("Drawn Contours", drawn_contours)
+    # cv.waitKey(0)
 
     cells = extract_cells(thresh, dot_contours)
     
-
     predicted_text = ''.join([predict_character(cell) for cell in cells])
     print("Predicted Braille Text:", predicted_text)
 
@@ -37,7 +36,7 @@ def preprocess_image(img : np.ndarray) -> np.ndarray:
         cv.COLOR_BGR2GRAY), 
         (1,1), 1),
         130, 255),
-        130, 255, cv.THRESH_BINARY_INV)
+        130, 255, cv.THRESH_BINARY)
     return thresh
 
 def segment_braille_dots(thresh_img: np.ndarray) -> list:
@@ -45,7 +44,7 @@ def segment_braille_dots(thresh_img: np.ndarray) -> list:
     dot_contours = []
     for cnt in contours:
         area = cv.contourArea(cnt)
-        if 10 < area < 100:
+        if 5 < area < 100:
             dot_contours.append(cnt)
     return dot_contours
 
@@ -55,7 +54,7 @@ def extract_cells(thresh_img: np.ndarray, contours: list) -> list:
     for cnt in contours:
         x, y, w, h = cv.boundingRect(cnt)
         # Crop the region around the dot (expand slightly to include full cell)
-        pad = 5
+        pad = 0
         x1, y1 = max(0, x-pad), max(0, y-pad)
         x2, y2 = min(thresh_img.shape[1], x+w+pad), min(thresh_img.shape[0], y+h+pad)
         cell_img = thresh_img[y1:y2, x1:x2]

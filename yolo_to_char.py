@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np  
 
-with open(r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Document\datasets-braille\data\labels\train\0_jpg.rf.9af84f2dce90d11fb3d643c0322c18d5.txt", "r", encoding="utf-8") as f:
+with open(r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Document\datasets-braille\data\labels\test\IMG_4479_jpg.rf.74bfb6d141e15e92aa9aa0cb70236cd5.txt", "r", encoding="utf-8") as f:
     yolo_lines = f.readlines()
 
 print(yolo_lines)

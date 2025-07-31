@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 import torchvision.transforms as transforms
-
+from scipy.ndimage import map_coordinates, gaussian_filter
 
 DATASET_DIR = r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Dataset"
 
@@ -29,24 +29,38 @@ def main():
 
     evaluate_model(test_loader, model, device)
 
-    image_path = r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Document\datasets-braille\data\images\test\IMG_4479_jpg.rf.74bfb6d141e15e92aa9aa0cb70236cd5.jpg"
-    label_path = r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Document\datasets-braille\data\labels\test\IMG_4479_jpg.rf.74bfb6d141e15e92aa9aa0cb70236cd5.txt"
+    image_path = r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Document\datasets-braille\data\images\test\IMG_5256_jpg.rf.879dc7c7b4b92c4d67f564b234bfc1da.jpg"
+    label_path = r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Document\datasets-braille\data\labels\test\IMG_5256_jpg.rf.879dc7c7b4b92c4d67f564b234bfc1da.txt"
 
     predicted = predict_braille_text_from_image(image_path, model, device)
+    # cv.imshow(preprocess_image(cv.imread(image_path)))
+    # cv.waitKey(0)
 
     actual = get_actual_text_from_yolo_labels(label_path)
     compare_predicted_and_actual(predicted, actual)    
 
-def preprocess_image(img : np.ndarray) -> np.ndarray:    
-    _, thresh = cv.threshold(
-        cv.Canny(
-        cv.medianBlur(
-        cv.cvtColor(
-        img, 
-        cv.COLOR_BGR2GRAY), 
-        3), 
-        150, 255),
-        130, 255, cv.THRESH_BINARY)
+def preprocess_image(img: np.ndarray) -> np.ndarray:
+    # Convert to grayscale
+    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+    # Median blur to remove salt-and-pepper noise
+    median = cv.medianBlur(gray, 3)
+
+    # Gaussian blur for smoothing
+    blurred = cv.GaussianBlur(median, (5, 5), 1)
+
+    # Canny edge detection (tune thresholds as needed)
+    edges = cv.Canny(blurred, 130, 255)
+
+    # Morphological operations to refine edges
+    kernel = np.ones((3, 3), np.uint8)
+
+    # Close small holes inside the foreground
+    closed = cv.morphologyEx(edges, cv.MORPH_CLOSE, kernel, iterations=1)
+
+    # Threshold to ensure binary image (if needed)
+    _, thresh = cv.threshold(closed, 127, 255, cv.THRESH_BINARY)
+
     return thresh
 
 def split_into_loaders(X: np.array, y: np.array):
@@ -73,9 +87,10 @@ class BrailleCNN(nn.Module):
         )
         self.fc_layer = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(64 * 5 * 5, 128),  # 28x28 -> conv & pool -> 5x5
+            nn.Linear(64 * 5 * 5, 64),  # 28x28 -> conv & pool -> 5x5
             nn.ReLU(),
-            nn.Linear(128, 26)  # 26 output classes
+            nn.Dropout(0.3),
+            nn.Linear(64, 26)  # 26 output classes
         )
 
     def forward(self, x):
@@ -87,7 +102,7 @@ def train_model(train_loader):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = BrailleCNN().to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 
     EPOCHS = 32
     for epoch in range(EPOCHS):
@@ -138,10 +153,12 @@ def predict_braille_text_from_image(img_path, model, device):
     predicted_text = ''
     model.eval()
 
+
     for idx, cell in enumerate(cells):
-        cv.imshow(f"Cell {idx}", cell)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
+        if (len(cells) < 30):
+            cv.imshow(f"Cell {idx}", cell)
+            cv.waitKey(0)
+            cv.destroyAllWindows()
 
     for cell in cells:
         resized = cv.resize(cell, (28, 28)).astype(np.float32) / 255.0
@@ -164,7 +181,7 @@ def predict_braille_text_from_image(img_path, model, device):
 #     return dot_contours
 
 def find_cell_groups(thresh_img: np.ndarray) -> list:
-    contours, _ = cv.findContours(thresh_img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv.findContours(thresh_img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     # centers = []
 
     boxes = [cv.boundingRect(cnt) for cnt in contours if 6 < cv.contourArea(cnt) < 100]
@@ -286,7 +303,7 @@ def sort_boxes_rowwise_with_tolerance(boxes, y_tolerance=10):
     if current_row:
         current_row.sort(key=lambda b: b[0])
         rows.append(current_row)
-
+    
     # Flatten rows into a single list
     return [box for row in rows for box in row]
 
@@ -295,7 +312,7 @@ def extract_cells(thresh_img: np.ndarray, cell_groups: list) -> tuple:
     cells, boxes = [], []
 
     for x, y, w, h in cell_groups:
-        pad = 10
+        pad = 5
         x1, y1 = max(0, x - pad), max(0, y - pad)
         x2, y2 = min(thresh_img.shape[1], x + w + pad), min(thresh_img.shape[0], y + h + pad)
 

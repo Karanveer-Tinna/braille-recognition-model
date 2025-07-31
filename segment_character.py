@@ -6,7 +6,7 @@ HEIGHT, WIDTH = 0, 0
 def main():
     global HEIGHT, WIDTH
     # img = cv.imread(r"Braille Dataset/Braille Document/datasets-braille/data/images/test/IMG_5466_jpg.rf.9fc8aa37446576204dca7ab136c4513e.jpg")
-    img = cv.imread(r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Document\datasets-braille\data\images\test\IMG_4479_jpg.rf.74bfb6d141e15e92aa9aa0cb70236cd5.jpg")
+    img = cv.imread(r"C:\Users\veerk\OneDrive\Desktop\Braille_To_Speech\Braille Dataset\Braille Document\datasets-braille\data\images\test\IMG_5256_jpg.rf.879dc7c7b4b92c4d67f564b234bfc1da.jpg")
     cv.imshow("Img", img)
     
     HEIGHT, WIDTH  = img.shape[:2]
@@ -64,7 +64,7 @@ def merge_close_boxes(boxes):
             # Check if boxes overlap or are close enough to be in the same Braille cell
             if not (box1[2] + 1*w < box2[0] or
                     box1[0] - 0.75*w> box2[2] or
-                    box1[3] + 3*h < box2[1] or
+                    box1[3] + 4*h < box2[1] or
                     box1[1] > box2[3]):
                 to_merge.append(b)
 

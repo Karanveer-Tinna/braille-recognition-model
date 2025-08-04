@@ -1,0 +1,6 @@
+train: C:\Users\veerk\Downloads\braille.v2i.yolov11\train\images
+val: C:\Users\veerk\Downloads\braille.v2i.yolov11\valid\images
+test: C:\Users\veerk\Downloads\braille.v2i.yolov11\test\images
+
+nc: 26  
+names: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']

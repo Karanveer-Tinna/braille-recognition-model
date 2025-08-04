@@ -212,3 +212,6 @@ for epoch in range(epochs):
 # --- Final Test Accuracy ---
 test_acc = evaluate(model, test_loader)
 print(f"\nTest Accuracy: {test_acc:.2f}%")
+
+torch.save(model.state_dict(), "yolo_classify_model.pt")
+print("Model saved successfully!")

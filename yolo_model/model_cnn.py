@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 
 class BrailleCNN(nn.Module):
-    def __init__(self, num_classes=64):
+    def __init__(self, num_classes=26):
         super(BrailleCNN, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, 3, padding=1)
         self.pool = nn.MaxPool2d(2)

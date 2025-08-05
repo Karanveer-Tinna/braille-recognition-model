@@ -12,8 +12,8 @@ yolo_model = YOLO('braille_model_2.pt')  # your trained YOLOv8 detection model
 
 # --- Load Braille classification model ---
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-braille_classifier = BrailleCNN(num_classes=64)  # adjust if your CNN uses 26 classes
-braille_classifier.load_state_dict(torch.load("braille_cnn_model.pt", map_location=device))  # path to your trained CNN
+braille_classifier = BrailleCNN(num_classes=26)  # adjust if your CNN uses 26 classes
+braille_classifier.load_state_dict(torch.load("yolo_classify_model.pt", map_location=device))  # path to your trained CNN
 braille_classifier.to(device)
 braille_classifier.eval()
 

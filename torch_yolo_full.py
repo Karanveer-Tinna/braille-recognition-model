@@ -121,7 +121,7 @@ test_loader  = DataLoader(test_dataset,  batch_size=64, shuffle=False, collate_f
 
 # --- Model ---
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = BrailleCNN(num_classes=64).to(device)
+model = BrailleCNN(num_classes=26).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 

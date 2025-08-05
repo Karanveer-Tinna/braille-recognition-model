@@ -161,7 +161,7 @@ test_loader  = DataLoader(test_dataset,  batch_size=64, shuffle=False, collate_f
 
 # --- Model, Loss, and Optimizer ---
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = BrailleCNN(num_classes=64).to(device)
+model = BrailleCNN(num_classes=26).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -203,7 +203,7 @@ def evaluate(model, loader):
 
 
 # --- Run Training ---
-epochs = 16
+epochs = 32
 for epoch in range(epochs):
     loss, acc = train(model, train_loader, optimizer, criterion)
     val_acc = evaluate(model, valid_loader)
@@ -213,5 +213,5 @@ for epoch in range(epochs):
 test_acc = evaluate(model, test_loader)
 print(f"\nTest Accuracy: {test_acc:.2f}%")
 
-torch.save(model.state_dict(), "yolo_classify_model.pt")
+torch.save(model.state_dict(), "yolo_classify_model_new.pt")
 print("Model saved successfully!")

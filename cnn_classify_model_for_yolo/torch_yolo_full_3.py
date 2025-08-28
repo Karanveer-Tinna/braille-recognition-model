@@ -154,9 +154,9 @@ if len(test_dataset) == 0:
 
 
 # --- Create DataLoaders ---
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, collate_fn=collate_fn)
-valid_loader = DataLoader(valid_dataset, batch_size=64, shuffle=False, collate_fn=collate_fn)
-test_loader  = DataLoader(test_dataset,  batch_size=64, shuffle=False, collate_fn=collate_fn)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn)
+valid_loader = DataLoader(valid_dataset, batch_size=32, shuffle=False, collate_fn=collate_fn)
+test_loader  = DataLoader(test_dataset,  batch_size=32, shuffle=False, collate_fn=collate_fn)
 
 
 # --- Model, Loss, and Optimizer ---
@@ -203,7 +203,7 @@ def evaluate(model, loader):
 
 
 # --- Run Training ---
-epochs = 32
+epochs = 100
 for epoch in range(epochs):
     loss, acc = train(model, train_loader, optimizer, criterion)
     val_acc = evaluate(model, valid_loader)
@@ -213,5 +213,5 @@ for epoch in range(epochs):
 test_acc = evaluate(model, test_loader)
 print(f"\nTest Accuracy: {test_acc:.2f}%")
 
-torch.save(model.state_dict(), "yolo_classify_model_new.pt")
+torch.save(model.state_dict(), "yolo_classify_model_100.pt")
 print("Model saved successfully!")

@@ -1,3 +1,4 @@
+#Added y-tolerance
 import streamlit as st
 import cv2 as cv
 import numpy as np
@@ -86,7 +87,7 @@ def main():
             # --- Sort bounding boxes with y-tolerance ---
             # Define a y-tolerance. You might need to adjust this value
             # based on the typical character size and line spacing in your Braille images.
-            Y_TOLERANCE = 15 # pixels - adjust as needed
+            Y_TOLERANCE = 30 # pixels - adjust as needed
 
             def sort_key(item):
                 x1, y1, x2, y2 = item['box']

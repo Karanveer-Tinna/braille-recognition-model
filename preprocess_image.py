@@ -3,7 +3,7 @@ import numpy as np
 
 # img : np.ndarray = cv.imread(r"C:\Users\veerk\Downloads\braille.v2i.yolov11\train\images\braille_png.rf.ed7ab2289cb97f7f605cd1545e6560bb.jpg")
 # img : np.ndarray = cv.imread(r"C:\Users\veerk\Downloads\braille.v2i.yolov11\train\images\braille_png_jpg.rf.5136c89cb146bf9d55e6bb683f92892d.jpg")
-img : np.ndarray = cv.imread(r"C:\Users\veerk\Downloads\braille.v2i.yolov11\train\images\db11_png_jpg.rf.fd33a84c53919e9a3c95c32ced2dc7c1.jpg")
+img : np.ndarray = cv.imread(r"C:\Users\veerk\Downloads\braille.v2i.yolov11\train\images\db33_png_jpg.rf.3fe709ff36ce6746002f452fae491e85.jpg")
 # img : np.ndarray = cv.imread(r"C:\Users\veerk\Downloads\braille.v2i.yolov11\train\images\braille_png_jpg.rf.42cb693ffc346c54e7f0c6fd0e28157d.jpg")
 # img : np.ndarray = cv.imread(r"C:\Users\veerk\Downloads\braille.v2i.yolov11\train\images\braille_png_jpg.rf.48e59e299750efbdbd447123cb150b68.jpg")
 # img : np.ndarray = cv.imread(r"C:\Users\veerk\Downloads\braille.v2i.yolov11\train\images\braille_png_jpg.rf.25eef4787c4d1726499bff039935f7ad.jpg")
@@ -33,12 +33,15 @@ kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3,3))
 opened = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel)
 cv.imshow("New + blur", opened)
 
-denoised = cv.bilateralFilter(equalized, 9, 100, 100)
+# denoised = cv.bilateralFilter(equalized, 9, 100, 100)
 
-thresh = cv.adaptiveThreshold(denoised, 255,cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, blockSize=5, C=2)
-kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3,3))
-opened = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel)
-cv.imshow("New", opened)
+# thresh = cv.adaptiveThreshold(denoised, 255,cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, blockSize=5, C=2)
+# kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3,3))
+# opened = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel)
+# cv.imshow("New", opened)
+
+colored = cv.cvtColor(opened, cv.COLOR_GRAY2BGR)
+cv.imshow("Colored", colored)
 
 cv.waitKey(0)
 cv.destroyAllWindows()

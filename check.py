@@ -32,13 +32,10 @@ b,g,r = cv.split(img)
 # cv.imshow("Red", resize_image(r))
 
 red = cv.merge([np.zeros_like(r),np.zeros_like(r), r])
-# cv.imshow("Red", resize_image(red))
 
 thresh : np.ndarray
 _, thresh = cv.threshold(red, 180, 255, cv.THRESH_BINARY)
-# cv.imshow("Threshold", resize_image(thresh))
 
 _, thresh_canny = cv.threshold(canny, 130, 255, cv.THRESH_BINARY)
-# cv.imshow("Threshold with canny", resize_image(thresh_canny))
 
 cv.waitKey(0)

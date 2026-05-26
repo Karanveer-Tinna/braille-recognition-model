@@ -40,25 +40,18 @@ def main():
     compare_predicted_and_actual(predicted, actual)    
 
 def preprocess_image(img: np.ndarray) -> np.ndarray:
-    # Convert to grayscale
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-    # Median blur to remove salt-and-pepper noise
     median = cv.medianBlur(gray, 3)
 
-    # Gaussian blur for smoothing
     blurred = cv.GaussianBlur(median, (5, 5), 1)
 
-    # Canny edge detection (tune thresholds as needed)
     edges = cv.Canny(blurred, 130, 255)
 
-    # Morphological operations to refine edges
     kernel = np.ones((3, 3), np.uint8)
 
-    # Close small holes inside the foreground
     closed = cv.morphologyEx(edges, cv.MORPH_CLOSE, kernel, iterations=1)
 
-    # Threshold to ensure binary image (if needed)
     _, thresh = cv.threshold(closed, 127, 255, cv.THRESH_BINARY)
 
     return thresh

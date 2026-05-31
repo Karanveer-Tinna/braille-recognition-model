@@ -103,7 +103,7 @@ def group_dot_contours_into_cells(contours, eps=30, min_samples=1):
 
 def predict_character(cell_img: np.ndarray) -> str:
     """Resize, normalize, and predict a single Braille cell"""
-    IMG_SIZE = 28  # Change based on what you trained with
+    IMG_SIZE = 28 
     resized = cv.resize(cell_img, (IMG_SIZE, IMG_SIZE))
     normalized = resized / 255.0
     reshaped = normalized.reshape(1, IMG_SIZE, IMG_SIZE, 1)  # (batch, H, W, channels)

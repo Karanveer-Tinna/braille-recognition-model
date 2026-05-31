@@ -89,7 +89,7 @@ def group_dot_contours_into_cells(contours, eps=30, min_samples=1):
     centers = []
     for cnt in contours:
         x, y, w, h = cv.boundingRect(cnt)
-        centers.append([x + w//2, y + h//2])  # center of dot
+        centers.append([x + w//2, y + h//2]) 
 
     clustering = DBSCAN(eps=eps, min_samples=min_samples).fit(centers)
     
